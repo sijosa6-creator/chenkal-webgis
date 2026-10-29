@@ -1,0 +1,678 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#075e46">
+  <title>Chenkal Grama Panchayat | Interactive WebGIS</title>
+
+  <!-- Leaflet interactive map library -->
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f4f7f5;
+      color: #26352e;
+      line-height: 1.7;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    .topbar {
+      background: #064c3b;
+      color: white;
+      padding: 9px 6%;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    header {
+      background: white;
+      padding: 18px 6%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      box-shadow: 0 2px 12px #0000000b;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: #e1f3e8;
+      font-size: 30px;
+    }
+
+    .brand h1 {
+      font-size: 22px;
+      color: #075e46;
+      line-height: 1.3;
+    }
+
+    .brand p {
+      font-size: 13px;
+      color: #66756c;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    nav a {
+      color: #34483c;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    nav a:hover {
+      color: #0a9866;
+    }
+
+    .hero {
+      min-height: 420px;
+      display: flex;
+      align-items: center;
+      padding: 65px 7%;
+      color: white;
+      background:
+        linear-gradient(90deg,
+        rgba(3, 48, 34, .94),
+        rgba(3, 48, 34, .53)),
+        url("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmTkNLcfaaQQg2lG9KlgFs5Lmqxb5B3K9x2QUGndN1ryTFWewSPBfuZ81g&s=10")
+        center/cover no-repeat;
+    }
+
+    .hero-content {
+      max-width: 760px;
+    }
+
+    .eyebrow {
+      color: #baf2cc;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .hero h2 {
+      font-size: clamp(34px, 5vw, 54px);
+      line-height: 1.16;
+      margin: 16px 0;
+    }
+
+    .hero p {
+      font-size: 17px;
+      max-width: 650px;
+      color: #edf8f0;
+    }
+
+    .btn {
+      display: inline-block;
+      margin-top: 25px;
+      padding: 12px 21px;
+      border-radius: 7px;
+      font-weight: bold;
+      background: #e1f5e8;
+      color: #075e46;
+      transition: .2s;
+    }
+
+    .btn:hover {
+      background: white;
+      transform: translateY(-2px);
+    }
+
+    .btn-outline {
+      border: 1px solid white;
+      color: white;
+      background: transparent;
+      margin-left: 8px;
+    }
+
+    section {
+      padding: 55px 6%;
+      scroll-margin-top: 20px;
+    }
+
+    .section-heading {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .section-heading h2 {
+      color: #075e46;
+      font-size: clamp(25px, 3vw, 34px);
+      margin-bottom: 8px;
+    }
+
+    .section-heading p {
+      color: #68776e;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: -35px;
+      position: relative;
+      padding: 0 6%;
+    }
+
+    .stat-card {
+      background: white;
+      padding: 24px 12px;
+      border-radius: 12px;
+      text-align: center;
+      box-shadow: 0 5px 22px #123c2510;
+    }
+
+    .stat-card strong {
+      display: block;
+      font-size: 28px;
+      color: #087b55;
+    }
+
+    .stat-card span {
+      font-size: 13px;
+      color: #64746a;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    .about-image {
+      width: 100%;
+      height: 360px;
+      object-fit: cover;
+      border-radius: 14px;
+      background: #dbe9df;
+    }
+
+    .about-text h3 {
+      color: #075e46;
+      font-size: 25px;
+      margin-bottom: 12px;
+    }
+
+    .about-text p {
+      margin-bottom: 12px;
+      color: #53645a;
+    }
+
+    .info-list {
+      margin: 18px 0;
+      list-style: none;
+    }
+
+    .info-list li {
+      padding: 8px 0;
+      border-bottom: 1px solid #e1e9e3;
+    }
+
+    .info-list strong {
+      color: #175c43;
+    }
+
+    .map-section {
+      background: #eaf2ec;
+    }
+
+    #locationMap {
+      width: 100%;
+      height: 460px;
+      border-radius: 12px;
+      border: 1px solid #d2e1d5;
+      z-index: 1;
+    }
+
+    .map-note {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #5b6e61;
+    }
+
+    .webgis-section {
+      background: white;
+    }
+
+    .webgis-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    .webgis-toolbar h3 {
+      color: #075e46;
+      font-size: 22px;
+    }
+
+    .webgis-frame {
+      width: 100%;
+      height: 760px;
+      border: 1px solid #d8e4da;
+      border-radius: 12px;
+      background: #edf3ef;
+      display: block;
+    }
+
+    .external-link {
+      color: white;
+      background: #087b55;
+      display: inline-block;
+      border-radius: 7px;
+      padding: 10px 16px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .external-link:hover {
+      background: #064c3b;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .feature-card {
+      padding: 25px;
+      background: white;
+      border: 1px solid #e0eae2;
+      border-radius: 12px;
+    }
+
+    .feature-card .emoji {
+      font-size: 30px;
+    }
+
+    .feature-card h3 {
+      color: #075e46;
+      margin: 12px 0 7px;
+      font-size: 19px;
+    }
+
+    .feature-card p {
+      color: #637269;
+      font-size: 14px;
+    }
+
+    .official {
+      text-align: center;
+      background: #e6f3e9;
+    }
+
+    .official p {
+      margin: 10px 0;
+    }
+
+    footer {
+      background: #073d30;
+      color: white;
+      padding: 35px 6% 18px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 30px;
+      margin-bottom: 25px;
+    }
+
+    footer h3 {
+      margin-bottom: 10px;
+    }
+
+    footer p, footer a {
+      color: #d4e7db;
+      font-size: 14px;
+    }
+
+    footer a:hover {
+      color: white;
+      text-decoration: underline;
+    }
+
+    .copyright {
+      border-top: 1px solid #ffffff2a;
+      padding-top: 15px;
+      text-align: center;
+      font-size: 12px;
+      color: #c7dfd1;
+    }
+
+    @media (max-width: 800px) {
+      header {
+        padding: 15px 5%;
+      }
+
+      nav {
+        width: 100%;
+        gap: 14px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding: 0 5%;
+      }
+
+      .about-grid,
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .features {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 50px 5%;
+      }
+
+      section {
+        padding: 42px 5%;
+      }
+
+      .webgis-frame {
+        height: 600px;
+      }
+
+      #locationMap {
+        height: 360px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .brand h1 {
+        font-size: 18px;
+      }
+
+      nav {
+        gap: 10px;
+      }
+
+      nav a {
+        font-size: 12px;
+      }
+
+      .hero h2 {
+        font-size: 35px;
+      }
+
+      .btn-outline {
+        margin-left: 0;
+      }
+
+      .webgis-frame {
+        height: 500px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="topbar">
+    <span>Government of Kerala | Local Self Government</span>
+    <span>Chenkal, Thiruvananthapuram, Kerala</span>
+  </div>
+
+  <header>
+    <div class="brand">
+      <div class="brand-icon">🌿</div>
+      <div>
+        <h1>Chenkal Grama Panchayat</h1>
+        <p>Interactive WebGIS Information Portal</p>
+      </div>
+    </div>
+
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#map">Location Map</a>
+      <a href="#webgis">Interactive GIS</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="home">
+      <div class="hero-content">
+        <div class="eyebrow">Explore • Understand • Develop</div>
+        <h2>Discover Chenkal Grama Panchayat</h2>
+        <p>
+          Explore the geography, landscape, local features and spatial
+          information of Chenkal Grama Panchayat through an interactive
+          WebGIS platform.
+        </p>
+        <a class="btn" href="#webgis">Explore Interactive Map</a>
+        <a class="btn btn-outline"
+           href="https://chenkalpanchayat.lsgkerala.gov.in/en"
+           target="_blank" rel="noopener noreferrer">
+          Official Website ↗
+        </a>
+      </div>
+    </section>
+
+    <div class="stats">
+      <div class="stat-card">
+        <strong>19.37</strong>
+        <span>Area (sq. km)</span>
+      </div>
+      <div class="stat-card">
+        <strong>55,165</strong>
+        <span>Approximate population</span>
+      </div>
+      <div class="stat-card">
+        <strong>22</strong>
+        <span>Wards</span>
+      </div>
+      <div class="stat-card">
+        <strong>Kerala</strong>
+        <span>Thiruvananthapuram District</span>
+      </div>
+    </div>
+
+    <section id="about">
+      <div class="section-heading">
+        <h2>About Chenkal</h2>
+        <p>Geographical and administrative profile</p>
+      </div>
+
+      <div class="about-grid">
+        <img class="about-image"
+             src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSuQdwh7OCdLmtdFN7i2LRAkPmNmMCwx7TCtZ_8qaW1FHOQOg_Yv-9dSUI&s=10"
+             alt="Green landscape and waterways in Kerala"
+             loading="lazy">
+
+        <div class="about-text">
+          <h3>A landscape in southern Kerala</h3>
+          <p>
+            Chenkal Grama Panchayat is located in Neyyattinkara Taluk
+            of Thiruvananthapuram district, Kerala. It forms part of
+            Parassala Block Panchayat.
+          </p>
+          <p>
+            Its landscape includes settlement areas, agricultural land,
+            roads, water bodies and the surrounding rural environment.
+            Geographic information can support local planning,
+            infrastructure development and environmental management.
+          </p>
+
+          <ul class="info-list">
+            <li><strong>District:</strong> Thiruvananthapuram</li>
+            <li><strong>Taluk:</strong> Neyyattinkara</li>
+            <li><strong>Block Panchayat:</strong> Parassala</li>
+            <li><strong>Village:</strong> Chenkal</li>
+            <li><strong>Area:</strong> 19.37 sq. km</li>
+            <li><strong>Western boundary:</strong> Neyyar River</li>
+            <li><strong>Northern boundary:</strong> NH 47 / NH 66 corridor</li>
+            <li><strong>Southern neighbours:</strong> Kulathoor and Karode</li>
+            <li><strong>Southeastern neighbour:</strong> Parassala</li>
+          </ul>
+          <p>
+            Administrative statistics are based on the panchayat's
+            official website and should be checked for future updates.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="webgis-section" id="webgis">
+      <div class="section-heading">
+        <h2>Interactive WebGIS Platform</h2>
+        <p>
+          View the Chenkal spatial mapping project directly on this page.
+        </p>
+      </div>
+
+      <div class="webgis-toolbar">
+        <h3>Chenkal Panchayat GIS Map</h3>
+        <a class="external-link"
+           href="https://sijosa6-creator.github.io/chenkal/"
+           target="_blank" rel="noopener noreferrer">
+          Open Map in New Tab ↗
+        </a>
+      </div>
+
+      <iframe
+        class="webgis-frame"
+        src="https://sijosa6-creator.github.io/chenkal/"
+        title="Chenkal Grama Panchayat Interactive WebGIS"
+        loading="lazy"
+        allowfullscreen>
+      </iframe>
+
+      <p class="map-note">
+        If the embedded map does not load, use the "Open Map in New Tab"
+        link above. Some websites restrict iframe embedding.
+      </p>
+    </section>
+
+    <section class="official">
+      <div class="section-heading">
+        <h2>Official Panchayat Website</h2>
+        <p>
+          Access government information, services, notices and
+          administrative details.
+        </p>
+      </div>
+
+      <a class="external-link"
+         href="https://chenkalpanchayat.lsgkerala.gov.in/en"
+         target="_blank" rel="noopener noreferrer">
+        Visit Chenkal Grama Panchayat Official Site ↗
+      </a>
+    </section>
+  </main>
+
+  <footer id="contact">
+    <div class="footer-grid">
+      <div>
+        <h3>Chenkal Grama Panchayat WebGIS</h3>
+        <p>
+          An interactive geographic information platform designed
+          to present spatial information about Chenkal Grama Panchayat,
+          Thiruvananthapuram, Kerala.
+        </p>
+      </div>
+
+      <div>
+        <h3>Contact Information</h3>
+        <p>
+          Email:
+          <a href="mailto:sijosa6@gmail.com">sijosa6@gmail.com</a>
+        </p>
+        <p>
+          Official website:
+          <a href="https://chenkalpanchayat.lsgkerala.gov.in/en"
+             target="_blank" rel="noopener noreferrer">
+            Chenkal Grama Panchayat
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <div class="copyright">
+      © <span id="year"></span> Chenkal Grama Panchayat WebGIS Project.
+      For educational and informational purposes.
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    // Approximate location of Chenkal, Kerala.
+    // Update these coordinates if you have a verified GPS location.
+    const chenkalLat = 8.32;
+    const chenkalLng = 77.14;
+
+    const map = L.map("locationMap").setView(
+      [chenkalLat, chenkalLng], 13
+    );
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">' +
+        'OpenStreetMap</a> contributors',
+      maxZoom: 19
+    }).addTo(map);
+
+    L.marker([chenkalLat, chenkalLng])
+      .addTo(map)
+      .bindPopup(
+        "<strong>Chenkal Grama Panchayat</strong><br>" +
+        "Neyyattinkara, Thiruvananthapuram, Kerala"
+      )
+      .openPopup();
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+
+    // Fix map sizing when the map section becomes visible.
+    window.addEventListener("load", function () {
+      setTimeout(function () {
+        map.invalidateSize();
+      }, 250);
+    });
+  </script>
+
+</body>
+</html>
